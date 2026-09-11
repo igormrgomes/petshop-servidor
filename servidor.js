@@ -1,5 +1,7 @@
 const express = require('express');
 const app = express();
+app.use(express.json());
+
 let pets = [
     { id: 1, nome: "Rex", especie: "Cachorro" },
     { id: 2, nome: "Mimi", especie: "Gato" }
@@ -18,5 +20,10 @@ app.listen(PORTA, function() {
     console.log(`Servidor rodando em http://localhost:${PORTA}`);
 });
 
+app.post('/pets', function(req, res) {
+    let novoPet = req.body;
+    pets.push(novoPet);
+    res.json({ mensagem: "Pet adicionado com sucesso!", pet: novoPet });
+});
 
 

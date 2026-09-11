@@ -26,4 +26,11 @@ app.post('/pets', function(req, res) {
     res.json({ mensagem: "Pet adicionado com sucesso!", pet: novoPet });
 });
 
+app.get('/sobre', function(req, res) {
+    res.json({
+        projeto: "PetShop Patas & Pelos",
+        modulo: "Módulo 7 - Backend com Node.js e Express"
+    });
+});
+
 

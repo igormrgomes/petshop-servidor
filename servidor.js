@@ -21,8 +21,18 @@ app.listen(PORTA, function() {
 });
 
 app.post('/pets', function(req, res) {
+    // 1. Lê o arquivo dados.json e converte o texto para o array pets
+    let textoLido = fs.readFileSync('dados.json', 'utf-8');
+    let pets = JSON.parse(textoLido);
+
+    // 2. Pega o pet enviado na requisição e adiciona no array
     let novoPet = req.body;
     pets.push(novoPet);
+
+    // 3. Escreve o array atualizado de volta no arquivo dados.json
+    fs.writeFileSync('dados.json', JSON.stringify(pets));
+
+    // 4. Envia a resposta de confirmação
     res.json({ mensagem: "Pet adicionado com sucesso!", pet: novoPet });
 });
 

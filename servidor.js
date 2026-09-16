@@ -1,18 +1,18 @@
 const express = require('express');
+const fs = require('fs');
 const app = express();
 app.use(express.json());
 
-let pets = [
-    { id: 1, nome: "Rex", especie: "Cachorro" },
-    { id: 2, nome: "Mimi", especie: "Gato" }
-];
+
 const PORTA = 3000;
 
 app.get('/', function(req, res) {
     res.send('Meu servidor PetShop está funcionando!');
 });
 
-app.get('/pets',function(req, res){
+app.get('/pets', function(req, res) {
+    let textoLido = fs.readFileSync('dados.json', 'utf-8');
+    let pets = JSON.parse(textoLido);
     res.json(pets);
 });
 

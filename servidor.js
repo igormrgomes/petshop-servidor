@@ -28,9 +28,13 @@ function gerarNovoId(listaDePets) {
     return maiorId + 1;
 }
 
-app.listen(PORTA, function() {
-    console.log(`Servidor rodando em http://localhost:${PORTA}`);
+app.get('/pets/total', function(req, res) {
+   let textoLido = fs.readFileSync('dados.json', 'utf-8')
+   let pets = JSON.parse(textoLido)
+   res.json({ total: pets.length });
 });
+
+
 
 app.post('/pets', function(req, res) {
     // 1. Lê o arquivo dados.json e converte o texto para o array pets
@@ -63,3 +67,6 @@ app.get('/sobre', function(req, res) {
 });
 
 
+app.listen(PORTA, function() {
+    console.log(`Servidor rodando em http://localhost:${PORTA}`);
+});

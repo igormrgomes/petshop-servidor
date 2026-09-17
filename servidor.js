@@ -16,6 +16,18 @@ app.get('/pets', function(req, res) {
     res.json(pets);
 });
 
+function gerarNovoId(listaDePets) {
+    let maiorId = 0;
+
+    for (let i = 0; i < listaDePets.length; i++) {
+        if (listaDePets[i].id > maiorId) {
+            maiorId = listaDePets[i].id;
+        }
+    }
+
+    return maiorId + 1;
+}
+
 app.listen(PORTA, function() {
     console.log(`Servidor rodando em http://localhost:${PORTA}`);
 });
@@ -26,7 +38,14 @@ app.post('/pets', function(req, res) {
     let pets = JSON.parse(textoLido);
 
     // 2. Pega o pet enviado na requisição e adiciona no array
-    let novoPet = req.body;
+
+    let novoId = gerarNovoId(pets);
+
+let novoPet = {
+    id: novoId,
+    nome: req.body.nome,
+    especie: req.body.especie
+};
     pets.push(novoPet);
 
     // 3. Escreve o array atualizado de volta no arquivo dados.json

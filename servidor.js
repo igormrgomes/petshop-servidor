@@ -1,10 +1,25 @@
+require('dotenv').config();
 const express = require('express');
 const fs = require('fs');
+const { MongoClient } = require('mongodb');
 const app = express();
 app.use(express.json());
 
 
 const PORTA = 3000;
+
+// Use a SUA connection string que funcionou na Aula 9.1
+const connectionString = process.env.MONGODB_URI; 
+const client = new MongoClient(connectionString);
+
+let colecaoPets;
+
+async function conectarBanco() {
+    await client.connect();
+    const banco = client.db('petshop');
+    colecaoPets = banco.collection('pets');
+    console.log("Conectado à coleção de pets!");
+}
 
 app.get('/', function(req, res) {
     res.send('Meu servidor PetShop está funcionando!');
@@ -45,24 +60,12 @@ app.get('/sobre', function(req, res) {
     });
 });
 
-
+conectarBanco();
 app.listen(PORTA, function() {
     console.log(`Servidor rodando em http://localhost:${PORTA}`);
 });
 
-const { MongoClient } = require('mongodb');
 
-// Use a SUA connection string que funcionou na Aula 9.1
-const connectionString = "mongodb+srv://igordmouragomes_db_user:o4Dk1UVRomORdWnQ@cluster0.eepmjtz.mongodb.net/?appName=Cluster0"; 
-const client = new MongoClient(connectionString);
 
-let colecaoPets;
 
-async function conectarBanco() {
-    await client.connect();
-    const banco = client.db('petshop');
-    colecaoPets = banco.collection('pets');
-    console.log("Conectado à coleção de pets!");
-}
 
-conectarBanco();

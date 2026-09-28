@@ -1,9 +1,11 @@
+const cors = require('cors');
 require('dotenv').config();
 const express = require('express');
 const fs = require('fs');
 const { MongoClient } = require('mongodb');
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 
 const PORTA = 3000;

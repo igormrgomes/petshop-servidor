@@ -45,13 +45,8 @@ app.get('/pets/total', function(req, res) {
 
 
 app.post('/pets', async function(req, res) {
-    const novoPet = {
-        nome: req.body.nome,
-        especie: req.body.especie
-    };
-
+    const novoPet = req.body;
     const resultado = await colecaoPets.insertOne(novoPet);
-
     res.json({ mensagem: 'Pet adicionado com sucesso!', id: resultado.insertedId });
 });
 

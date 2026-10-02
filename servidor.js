@@ -2,7 +2,7 @@ const cors = require('cors');
 require('dotenv').config();
 const express = require('express');
 const fs = require('fs');
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -62,6 +62,16 @@ app.listen(PORTA, function() {
     console.log(`Servidor rodando em http://localhost:${PORTA}`);
 });
 
+
+const { MongoClient, ObjectId } = require('mongodb');
+
+app.delete('/pets/:id', async function(req, res) {
+    const id = req.params.id;
+
+    const resultado = await colecaoPets.deleteOne({ _id: new ObjectId(id) });
+
+    res.json({ mensagem: 'Pet excluído!', apagados: resultado.deletedCount });
+});
 
 
 

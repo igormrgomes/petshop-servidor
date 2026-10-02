@@ -63,7 +63,6 @@ app.listen(PORTA, function() {
 });
 
 
-const { MongoClient, ObjectId } = require('mongodb');
 
 app.delete('/pets/:id', async function(req, res) {
     const id = req.params.id;

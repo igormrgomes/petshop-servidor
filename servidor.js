@@ -72,6 +72,9 @@ app.delete('/pets/:id', async function(req, res) {
     res.json({ mensagem: 'Pet excluído!', apagados: resultado.deletedCount });
 });
 
+app.get('/versao', function(req, res) {
+    res.json({ versao: '1.0' });
+});
 
 
 

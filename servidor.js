@@ -1,3 +1,4 @@
+let colecaoAgendamentos;
 const cors = require('cors');
 require('dotenv').config();
 const express = require('express');
@@ -20,7 +21,8 @@ async function conectarBanco() {
     await client.connect();
     const banco = client.db('petshop');
     colecaoPets = banco.collection('pets');
-    console.log("Conectado à coleção de pets!");
+    colecaoAgendamentos = banco.collection('agendamentos');
+    console.log("Conectado às coleções de pets e agendamentos!");
 }
 
 app.get('/', function(req, res) {
@@ -108,4 +110,20 @@ app.put('/pets/:id', async function(req, res) {
 }
 
     res.json({ mensagem: 'Pet atualizado!', alterados: resultado.modifiedCount });
+});
+
+app.get('/agendamentos', async function(req, res) {
+    const agendamentos = await colecaoAgendamentos.find({}).toArray();
+    res.json(agendamentos);
+});
+
+app.post('/agendamentos', async function(req, res) {
+    const novo = req.body;
+
+    if (!novo.pet_id || !novo.servico || !novo.data || !novo.hora) {
+        return res.status(400).json({ mensagem: 'Pet, serviço, data e hora são obrigatórios.' });
+    }
+
+    const resultado = await colecaoAgendamentos.insertOne(novo);
+    res.status(201).json({ mensagem: 'Agendamento criado!', id: resultado.insertedId });
 });

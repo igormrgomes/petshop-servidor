@@ -112,10 +112,7 @@ app.put('/pets/:id', async function(req, res) {
     res.json({ mensagem: 'Pet atualizado!', alterados: resultado.modifiedCount });
 });
 
-app.get('/agendamentos', async function(req, res) {
-    const agendamentos = await colecaoAgendamentos.find({}).toArray();
-    res.json(agendamentos);
-});
+
 
 app.post('/agendamentos', async function(req, res) {
     const novo = req.body;
@@ -126,4 +123,33 @@ app.post('/agendamentos', async function(req, res) {
 
     const resultado = await colecaoAgendamentos.insertOne(novo);
     res.status(201).json({ mensagem: 'Agendamento criado!', id: resultado.insertedId });
+});
+
+app.get('/agendamentos', async function(req, res) {
+    console.log('*** EXECUTANDO A ROTA NOVA ***');
+    const agendamentos = await colecaoAgendamentos.find({}).toArray();
+    const pets = await colecaoPets.find({}).toArray();
+
+    for (let i = 0; i < agendamentos.length; i++) {
+        agendamentos[i].nome_pet = 'Pet não encontrado';
+
+        for (let j = 0; j < pets.length; j++) {
+            if (pets[j]._id.toString() === agendamentos[i].pet_id) {
+                agendamentos[i].nome_pet = pets[j].nome_pet;
+            }
+        }
+    }
+
+    res.json(agendamentos);
+});
+
+app.delete('/agendamentos/:id', async function(req, res) {
+    const id = req.params.id;
+    const resultado = await colecaoAgendamentos.deleteOne({ _id: new ObjectId(id) });
+
+    if (resultado.deletedCount === 0) {
+        return res.status(404).json({ mensagem: 'Agendamento não encontrado.' });
+    }
+
+    res.json({ mensagem: 'Agendamento excluído!' });
 });

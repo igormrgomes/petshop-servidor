@@ -153,3 +153,34 @@ app.delete('/agendamentos/:id', async function(req, res) {
 
     res.json({ mensagem: 'Agendamento excluído!' });
 });
+
+app.get('/agendamentos/:id', async function(req, res) {
+    const id = req.params.id;
+    const agendamento = await colecaoAgendamentos.findOne({ _id: new ObjectId(id) });
+
+    if (agendamento === null) {
+        return res.status(404).json({ mensagem: 'Agendamento não encontrado.' });
+    }
+
+    res.json(agendamento);
+});
+
+app.put('/agendamentos/:id', async function(req, res) {
+    const id = req.params.id;
+    const dadosNovos = req.body;
+
+    if (!dadosNovos.pet_id || !dadosNovos.servico || !dadosNovos.data || !dadosNovos.hora) {
+        return res.status(400).json({ mensagem: 'Pet, serviço, data e hora são obrigatórios.' });
+    }
+
+    const resultado = await colecaoAgendamentos.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: dadosNovos }
+    );
+
+    if (resultado.matchedCount === 0) {
+        return res.status(404).json({ mensagem: 'Agendamento não encontrado.' });
+    }
+
+    res.json({ mensagem: 'Agendamento atualizado!' });
+});

@@ -33,6 +33,15 @@ app.get('/pets', async function(req, res) {
     // O await espera a busca na nuvem terminar
     const pets = await colecaoPets.find({}).toArray(); 
     // O driver já entrega um array pronto, sem precisar de JSON.parse!
+    const agendamentos = await colecaoAgendamentos.find({}).toArray();
+
+    for (let i = 0; i < pets.length; i++) {
+        pets[i].total_agendamentos = agendamentos.filter(function(agendamento) {
+            return agendamento.pet_id &&
+                agendamento.pet_id.toString() === pets[i]._id.toString();
+        }).length;
+    }
+
     res.json(pets); 
 });
 

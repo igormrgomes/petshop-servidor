@@ -74,6 +74,13 @@ app.listen(PORTA, function() {
 app.delete('/pets/:id', async function(req, res) {
     const id = req.params.id;
 
+    const agendamento = await colecaoAgendamentos.findOne({ pet_id: id });
+    if (agendamento !== null) {
+        return res.status(400).json({
+            mensagem: 'Este pet tem agendamentos. Exclua os agendamentos antes.'
+        });
+    }
+
     const resultado = await colecaoPets.deleteOne({ _id: new ObjectId(id) });
     if (resultado.deletedCount === 0) {
     return res.status(404).json({ mensagem: 'Pet não encontrado.' });

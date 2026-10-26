@@ -16,11 +16,13 @@ Responda, comente e nomeie variáveis em português do Brasil. Nomes de campos e
 - Validação com `return res.status(400).json({ mensagem })`; não encontrado com 404; criação com 201.
 - Rotas fixas (ex.: `/pets/total`) antes das rotas com `:id`.
 - Sem bibliotecas novas sem me perguntar antes.
+- Autenticação com bcrypt + jsonwebtoken; token no cabeçalho Authorization: Bearer; 401 para não autenticado
 
 ## Proibido
 - Ler, citar ou alterar o arquivo `.env`.
 - Apagar ou reescrever rotas que não fazem parte da tarefa pedida.
 - Mudar a estrutura de pastas.
+- Guardar senhas sem hash bcrypt; colocar segredos (JWT) fora do .env; criar tokens sem expiração; devolver senha ou hash em respostas
 
 ## Como testo
 `node servidor.js` local; rotas testadas pelo navegador ou pelo Console em http://localhost:3000.

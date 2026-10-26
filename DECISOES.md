@@ -1,0 +1,1 @@
+Rotas de leitura (GET /pets e GET /agendamentos) permanecem públicas; todas as rotas de criação, edição e exclusão (POST, PUT e DELETE) ficam protegidas

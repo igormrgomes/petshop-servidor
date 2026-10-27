@@ -1,6 +1,7 @@
 let colecaoAgendamentos;
 const cors = require('cors');
 require('dotenv').config();
+const bcrypt = require('bcrypt');
 const express = require('express');
 const fs = require('fs');
 const { MongoClient, ObjectId } = require('mongodb');
@@ -16,12 +17,14 @@ const connectionString = process.env.MONGODB_URI;
 const client = new MongoClient(connectionString);
 
 let colecaoPets;
+let colecaoUsuarios;
 
 async function conectarBanco() {
     await client.connect();
     const banco = client.db('petshop');
     colecaoPets = banco.collection('pets');
     colecaoAgendamentos = banco.collection('agendamentos');
+    colecaoUsuarios = banco.collection('usuarios');
     console.log("Conectado às coleções de pets e agendamentos!");
 }
 
@@ -64,6 +67,39 @@ app.post('/pets', async function(req, res) {
 
     const resultado = await colecaoPets.insertOne(novoPet);
     res.status(201).json({ mensagem: 'Pet adicionado com sucesso!', id: resultado.insertedId });
+});
+
+app.post('/usuarios', async function(req, res) {
+    const { email, senha } = req.body || {};
+
+    if (typeof email !== 'string' || email.trim() === '' ||
+        typeof senha !== 'string' || senha.length < 8) {
+        return res.status(400).json({
+            mensagem: 'Informe um email válido e uma senha com no mínimo 8 caracteres.'
+        });
+    }
+
+    const emailNormalizado = email.trim().toLowerCase();
+    const formatoEmailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailNormalizado);
+    if (!formatoEmailValido) {
+        return res.status(400).json({ mensagem: 'Informe um email válido.' });
+    }
+
+    const usuarioExistente = await colecaoUsuarios.findOne({ email: emailNormalizado });
+    if (usuarioExistente !== null) {
+        return res.status(400).json({ mensagem: 'Este email já está cadastrado.' });
+    }
+
+    const senha_hash = await bcrypt.hash(senha, 10);
+    const resultado = await colecaoUsuarios.insertOne({
+        email: emailNormalizado,
+        senha_hash: senha_hash
+    });
+
+    res.status(201).json({
+        mensagem: 'Usuário criado com sucesso!',
+        id: resultado.insertedId.toString()
+    });
 });
 
 app.get('/sobre', function(req, res) {

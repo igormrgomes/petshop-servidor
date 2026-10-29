@@ -4,6 +4,7 @@ require('dotenv').config();
 const bcrypt = require('bcrypt');
 const express = require('express');
 const fs = require('fs');
+const jwt = require('jsonwebtoken');
 const { MongoClient, ObjectId } = require('mongodb');
 const app = express();
 app.use(express.json());
@@ -67,6 +68,40 @@ app.post('/pets', async function(req, res) {
 
     const resultado = await colecaoPets.insertOne(novoPet);
     res.status(201).json({ mensagem: 'Pet adicionado com sucesso!', id: resultado.insertedId });
+});
+
+app.post('/login', async function(req, res) {
+    if (!process.env.JWT_SEGREDO) {
+        console.error('JWT_SEGREDO não está configurado.');
+        return res.status(500).json({ mensagem: 'Erro interno do servidor.' });
+    }
+
+    const { email, senha } = req.body || {};
+    if (typeof email !== 'string' || email.trim() === '' ||
+        typeof senha !== 'string' || senha === '') {
+        return res.status(401).json({ mensagem: 'Email ou senha inválidos' });
+    }
+
+    const emailNormalizado = email.trim().toLowerCase();
+    const usuario = await colecaoUsuarios.findOne({ email: emailNormalizado });
+    if (usuario === null || typeof usuario.senha_hash !== 'string' ||
+        !await bcrypt.compare(senha, usuario.senha_hash)) {
+        return res.status(401).json({ mensagem: 'Email ou senha inválidos' });
+    }
+
+    const token = jwt.sign(
+        { sub: usuario._id.toString() },
+        process.env.JWT_SEGREDO,
+        { expiresIn: '8h' }
+    );
+
+    res.json({
+        token,
+        usuario: {
+            id: usuario._id.toString(),
+            email: usuario.email
+        }
+    });
 });
 
 app.post('/usuarios', async function(req, res) {
